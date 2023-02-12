@@ -1,14 +1,22 @@
 package edu.jsu.mcis.cs310.coursedb.dao;
 
+import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RegistrationDAO {
     
     // INSERT YOUR CODE HERE
+    private final Connection connection = null;
+    String url = "jdbc:mysql://localhost/jsu_sp23_v1";
+    String username="cs310_p2_user";
+    String password="P2!user";
     
     private final DAOFactory daoFactory;
     
@@ -30,8 +38,16 @@ public class RegistrationDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
+                String query = "INSERT INTO registration (studentid, termid, crn) VALUES (?, ?, ?)";
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, studentid);
+                ps.setInt(2, termid);
+                ps.setInt(3, crn);
+            
+                int records = ps.executeUpdate();
                 
             }
+                
             
         }
         
@@ -61,6 +77,13 @@ public class RegistrationDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
+                String query = "DELETE FROM registration WHERE studentid = ? AND termid = ? AND crn = ?";
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, studentid);
+                ps.setInt(2, termid);
+                ps.setInt(3, crn);
+            
+                result = ps.execute();
                 
             }
             
@@ -91,6 +114,12 @@ public class RegistrationDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
+                String query = "DELETE FROM registration WHERE studentid = ? AND termid = ?";
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, studentid);
+                ps.setInt(2, termid);
+            
+                result = ps.execute();
                 
             }
             
@@ -116,6 +145,8 @@ public class RegistrationDAO {
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         
+        
+        
         try {
             
             Connection conn = daoFactory.getConnection();
@@ -124,6 +155,23 @@ public class RegistrationDAO {
                 
                 // INSERT YOUR CODE HERE
                 
+                    JsonArray results = new JsonArray();
+                    String query = "SELECT * FROM registration ORDER BY crn";
+                    ps = conn.prepareStatement(query);
+                    rs = ps.getResultSet();
+
+                    while(rs.next()) {
+                        JsonObject jsonobject= new JsonObject();
+                        
+                        int id = rs.getInt("studentid");
+                        int tid = rs.getInt("termid");
+                        String lastname = rs.getString("lastname");
+                        jsonobject.put("studentid",tid);
+                        jsonobject.put("termid",tid);
+                        jsonobject.put("lastname",lastname);
+                        results.add(jsonobject);
+                        
+                    }    
             }
             
         }
