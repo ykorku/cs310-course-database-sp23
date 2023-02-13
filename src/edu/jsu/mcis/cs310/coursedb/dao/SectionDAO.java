@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class SectionDAO {
     
     // INSERT YOUR CODE HERE
-    
+    String QUERY_FIND = "SELECT * FROM section WHERE subjectid = ? AND num = ? AND termid = ? ORDER BY crn";
     private final DAOFactory daoFactory;
     
     SectionDAO(DAOFactory daoFactory) {
@@ -34,25 +34,32 @@ public class SectionDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
-                String sql = "SELECT * FROM section WHERE termid = ? AND subjectid = ? AND num = ? ORDER BY crn";
-                ps = conn.prepareStatement(sql);
+                
+                 ps = conn.prepareStatement(QUERY_FIND);
                 ps.setInt(1, termid);
                 ps.setString(2, subjectid);
                 ps.setString(3, num);
-                rs = ps.executeQuery();
                 
-                rsmd = rs.getMetaData();
-                int columns = rsmd.getColumnCount();
-                JsonArray jArray= new JsonArray();
+                boolean hasresults = ps.execute();
                 
-                while (rs.next()) {
-                    for (int i = 1; i <= columns; i++) {
-                        JsonObject jsonobject= new JsonObject();
-                        jsonobject.put(rsmd.getColumnName(i), rs.getString(i));
-                        jArray.add(jsonobject);
-                    }   
-                } 
-                result=Jsoner.serialize(jArray);
+                if (hasresults) {
+
+                    rs = ps.getResultSet();
+
+                    JsonArray sections = new JsonArray();
+
+                    while (rs.next()) {
+                        JsonObject section = new JsonObject();
+                        section.put("termid", rs.getInt("termid"));
+                        section.put("subjectid", rs.getString("subjectid"));
+                        section.put("num", rs.getString("num"));
+                        section.put("title", rs.getString("title"));
+                        sections.add(section);
+                    }
+
+                    result = sections.toString();
+                }
+                
             }
       
         }

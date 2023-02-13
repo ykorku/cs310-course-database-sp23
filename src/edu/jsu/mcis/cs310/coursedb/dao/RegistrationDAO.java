@@ -14,9 +14,10 @@ public class RegistrationDAO {
     
     // INSERT YOUR CODE HERE
     private final Connection connection = null;
-    String url = "jdbc:mysql://localhost/jsu_sp23_v1";
-    String username="cs310_p2_user";
-    String password="P2!user";
+    private static final String QUERY_CREATE = "INSERT INTO registration (studentid, termid, crn) VALUES (?, ?, ?)";
+    private static final String QUERY_DELETE = "DELETE FROM registration WHERE studentid = ? AND termid = ? AND crn = ?";
+    private static final String QUERY_DELETE2 = "DELETE FROM registration WHERE studentid = ? AND termid = ?";
+    private static final String QUERY_LIST = "SELECT * FROM registration ORDER BY crn";
     
     private final DAOFactory daoFactory;
     
@@ -37,16 +38,19 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
-                String query = "INSERT INTO registration (studentid, termid, crn) VALUES (?, ?, ?)";
-                ps = conn.prepareStatement(query);
+                ps = conn.prepareStatement(QUERY_CREATE, Statement.RETURN_GENERATED_KEYS);
                 ps.setInt(1, studentid);
                 ps.setInt(2, termid);
                 ps.setInt(3, crn);
-            
-                int records = ps.executeUpdate();
+                
+                int updateCount = ps.executeUpdate();
+                
+                if (updateCount > 0) {
+                    result = true;
+                }
                 
             }
+            
                 
             
         }
@@ -76,14 +80,18 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
-                String query = "DELETE FROM registration WHERE studentid = ? AND termid = ? AND crn = ?";
-                ps = conn.prepareStatement(query);
+                ps = conn.prepareStatement(QUERY_DELETE);
                 ps.setInt(1, studentid);
                 ps.setInt(2, termid);
                 ps.setInt(3, crn);
+                
+                int updateCount = ps.executeUpdate();
+                
+                if (updateCount > 0) {
             
-                result = ps.execute();
+                    result = true;
+
+                }
                 
             }
             
@@ -114,12 +122,15 @@ public class RegistrationDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
-                String query = "DELETE FROM registration WHERE studentid = ? AND termid = ?";
-                ps = conn.prepareStatement(query);
+                ps = conn.prepareStatement(QUERY_DELETE2);
                 ps.setInt(1, studentid);
                 ps.setInt(2, termid);
-            
-                result = ps.execute();
+                
+                int updateCount = ps.executeUpdate();
+                
+                if (updateCount > 0) {
+                    result = true;
+                }
                 
             }
             
@@ -145,7 +156,7 @@ public class RegistrationDAO {
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         
-        
+        JsonArray registrations = new JsonArray();
         
         try {
             
@@ -154,24 +165,22 @@ public class RegistrationDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
+                String query = "SELECT studentid, termid, crn FROM registration WHERE studentid = ? AND termid = ? ORDER BY crn";
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, studentid);
+                ps.setInt(2, termid);
+                rs = ps.executeQuery();
+                rsmd = rs.getMetaData();
+                while (rs.next()) {
+                    JsonObject registration = new JsonObject();
+                    registration.put("studentid", rs.getInt("studentid"));
+                    registration.put("termid", rs.getInt("termid"));
+                    registration.put("crn", rs.getInt("crn"));
+                    registrations.add(registration);
+                }
                 
-                    JsonArray results = new JsonArray();
-                    String query = "SELECT * FROM registration ORDER BY crn";
-                    ps = conn.prepareStatement(query);
-                    rs = ps.getResultSet();
-
-                    while(rs.next()) {
-                        JsonObject jsonobject= new JsonObject();
-                        
-                        int id = rs.getInt("studentid");
-                        int tid = rs.getInt("termid");
-                        String lastname = rs.getString("lastname");
-                        jsonobject.put("studentid",tid);
-                        jsonobject.put("termid",tid);
-                        jsonobject.put("lastname",lastname);
-                        results.add(jsonobject);
-                        
-                    }    
+                
+                result = registrations.toString();    
             }
             
         }
