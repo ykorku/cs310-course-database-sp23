@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class SectionDAO {
     
     // INSERT YOUR CODE HERE
-    String QUERY_FIND = "SELECT * FROM section WHERE subjectid = ? AND num = ? AND termid = ? ORDER BY crn";
+    String QUERY_FIND = "SELECT * FROM section WHERE termid = ? AND subjectid = ? AND num = ? ORDER BY crn";
     private final DAOFactory daoFactory;
     
     SectionDAO(DAOFactory daoFactory) {
@@ -35,7 +35,7 @@ public class SectionDAO {
                 
                 // INSERT YOUR CODE HERE
                 
-                 ps = conn.prepareStatement(QUERY_FIND);
+                ps = conn.prepareStatement(QUERY_FIND);
                 ps.setInt(1, termid);
                 ps.setString(2, subjectid);
                 ps.setString(3, num);
@@ -50,14 +50,23 @@ public class SectionDAO {
 
                     while (rs.next()) {
                         JsonObject section = new JsonObject();
-                        section.put("termid", rs.getInt("termid"));
+                        section.put("termid", rs.getString("termid"));
+                        section.put("crn", rs.getString("crn"));
                         section.put("subjectid", rs.getString("subjectid"));
                         section.put("num", rs.getString("num"));
-                        section.put("title", rs.getString("title"));
+                        section.put("section", rs.getString("section"));
+                        section.put("scheduletypeid", rs.getString("scheduletypeid"));
+                        section.put("instructor", rs.getString("instructor"));
+                        section.put("start", rs.getString("start"));
+                        section.put("end", rs.getString("end"));
+                        section.put("days", rs.getString("days"));
+                        section.put("where", rs.getString("where"));
+                        
+
                         sections.add(section);
                     }
 
-                    result = sections.toString();
+                    result= Jsoner.serialize(sections);
                 }
                 
             }

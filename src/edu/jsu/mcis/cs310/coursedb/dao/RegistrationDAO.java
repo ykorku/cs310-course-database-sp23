@@ -1,7 +1,6 @@
 package edu.jsu.mcis.cs310.coursedb.dao;
 
-import com.github.cliftonlabs.json_simple.JsonArray;
-import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +16,7 @@ public class RegistrationDAO {
     private static final String QUERY_CREATE = "INSERT INTO registration (studentid, termid, crn) VALUES (?, ?, ?)";
     private static final String QUERY_DELETE = "DELETE FROM registration WHERE studentid = ? AND termid = ? AND crn = ?";
     private static final String QUERY_DELETE2 = "DELETE FROM registration WHERE studentid = ? AND termid = ?";
-    private static final String QUERY_LIST = "SELECT * FROM registration ORDER BY crn";
+    private static final String QUERY_LIST = "SELECT * FROM registration WHERE studentid = ? AND termid = ? ORDER BY crn";
     
     private final DAOFactory daoFactory;
     
@@ -165,22 +164,21 @@ public class RegistrationDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
-                String query = "SELECT studentid, termid, crn FROM registration WHERE studentid = ? AND termid = ? ORDER BY crn";
-                ps = conn.prepareStatement(query);
+                ps = conn.prepareStatement(QUERY_LIST);
                 ps.setInt(1, studentid);
                 ps.setInt(2, termid);
                 rs = ps.executeQuery();
                 rsmd = rs.getMetaData();
                 while (rs.next()) {
                     JsonObject registration = new JsonObject();
-                    registration.put("studentid", rs.getInt("studentid"));
-                    registration.put("termid", rs.getInt("termid"));
-                    registration.put("crn", rs.getInt("crn"));
+                    registration.put("studentid", rs.getString("studentid"));
+                    registration.put("termid", rs.getString("termid"));
+                    registration.put("crn", rs.getString("crn"));
                     registrations.add(registration);
                 }
                 
                 
-                result = registrations.toString();    
+                result = Jsoner.serialize(registrations);
             }
             
         }
