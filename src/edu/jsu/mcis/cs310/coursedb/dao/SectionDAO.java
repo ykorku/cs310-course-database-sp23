@@ -12,6 +12,8 @@ import java.sql.SQLException;
 public class SectionDAO {
     
     // INSERT YOUR CODE HERE
+    
+    //write the needed query
     String QUERY_FIND = "SELECT * FROM section WHERE termid = ? AND subjectid = ? AND num = ? ORDER BY crn";
     private final DAOFactory daoFactory;
     
@@ -35,13 +37,17 @@ public class SectionDAO {
                 
                 // INSERT YOUR CODE HERE
                 
+                //connect java with sql via our query and set the needed values from given data input 
                 ps = conn.prepareStatement(QUERY_FIND);
                 ps.setInt(1, termid);
                 ps.setString(2, subjectid);
                 ps.setString(3, num);
                 
+                //execute the query
                 boolean hasresults = ps.execute();
                 
+                //if it has results, add the row data inside a jsonobject, then add add the jsonobject to jsonarray and repeat 
+                //for all the rows
                 if (hasresults) {
 
                     rs = ps.getResultSet();

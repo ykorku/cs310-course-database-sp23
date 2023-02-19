@@ -13,7 +13,8 @@ public class DAOUtility {
         JsonArray records = new JsonArray();
         
         try {
-        
+            
+            //if there are results add the data for each row to a json object, then add those json objects to the jsonarray
              if (rs != null) {
                 ResultSetMetaData metadata = rs.getMetaData();
                 int columnCount = metadata.getColumnCount();

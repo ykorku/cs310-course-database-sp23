@@ -37,11 +37,13 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
+                //call our query, set the variables from given input data
                 ps = conn.prepareStatement(QUERY_CREATE, Statement.RETURN_GENERATED_KEYS);
                 ps.setInt(1, studentid);
                 ps.setInt(2, termid);
                 ps.setInt(3, crn);
                 
+                //execute the query, if it executed, set return value result to true
                 int updateCount = ps.executeUpdate();
                 
                 if (updateCount > 0) {
@@ -79,11 +81,14 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
+                //call our query, set the variables from given input data
                 ps = conn.prepareStatement(QUERY_DELETE);
                 ps.setInt(1, studentid);
                 ps.setInt(2, termid);
                 ps.setInt(3, crn);
                 
+                
+                //execute the query, if it executed, set return value result to true
                 int updateCount = ps.executeUpdate();
                 
                 if (updateCount > 0) {
@@ -121,10 +126,15 @@ public class RegistrationDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
+                
+                //call our query, set the variables from given input data
                 ps = conn.prepareStatement(QUERY_DELETE2);
                 ps.setInt(1, studentid);
                 ps.setInt(2, termid);
                 
+                
+                
+                //execute the query, if it executed, set return value result to true
                 int updateCount = ps.executeUpdate();
                 
                 if (updateCount > 0) {
@@ -164,9 +174,14 @@ public class RegistrationDAO {
             if (conn.isValid(0)) {
                 
                 // INSERT YOUR CODE HERE
+                
+                //call our query, set the variables from given input data
                 ps = conn.prepareStatement(QUERY_LIST);
                 ps.setInt(1, studentid);
                 ps.setInt(2, termid);
+                
+                //execute the query, get our result row, add them into a jsonobject, and add those jsonobjects to jsonarrays
+                //for each row until the end of the rows
                 rs = ps.executeQuery();
                 rsmd = rs.getMetaData();
                 while (rs.next()) {
